@@ -5,9 +5,6 @@ import "./styles.css"; // Importa el archivo CSS
 import DOMPurify from "dompurify";
 import html2pdf from "html2pdf.js";
 
-//import jsPDF from "jspdf";
-//import html2canvas from "html2canvas";
-
 const Formulario = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo estado para controlar el envío del formulario
   const [date, setDate] = useState("");
@@ -76,11 +73,8 @@ const Formulario = () => {
     if (name in formValues.antepasadoCroata) {
       setFormValues({
         ...formValues,
-        //fechaNacimiento: event.target.value,
         antepasadoCroata: {
           ...formValues.antepasadoCroata,
-      /*    fechaNacimientoA: event.target.value,
-          fechaFallecimiento: event.target.value,*/
           [name]: type === "checkbox" ? checked : value,
         },
       });
@@ -200,7 +194,6 @@ const Formulario = () => {
       const response = await axios.post("https://hoja-de-vida-1--danieleldan.repl.co/api/traducir", {
         resultado: resultado,
       });
-      //console.log("enviado desde front: \n" + resultado + "\n");
       const sanitizedHTML = DOMPurify.sanitize(response.data.result);
       setResultado(sanitizedHTML);
 
@@ -830,10 +823,9 @@ const Formulario = () => {
               value={formValues.creatividad}
               onChange={handleInputChange}
             />
-<p className="description">Desplaza la barra para ajustar la creatividad de la Inteligencia Artificial</p>
-<p className="range-label">0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy Creativo</p>
-<p className="adjustment">Creatividad: <span className="creativity-value">{formValues.creatividad}</span></p>
-
+          <p className="description">Desplaza la barra para ajustar la creatividad de la Inteligencia Artificial</p>
+          <p className="range-label">0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy Creativo</p>
+          <p className="adjustment">Creatividad: <span className="creativity-value">{formValues.creatividad}</span></p>
           </div>
           <button
             type="submit"
