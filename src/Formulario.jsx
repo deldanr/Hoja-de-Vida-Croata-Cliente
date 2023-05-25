@@ -60,35 +60,36 @@ const Formulario = () => {
       motivoEmigracion: "",
       ocupacionDestino: "",
       seCaso: false,
-      pareja: {
-        nombreConyuge: "",
-        anoCasamiento: "",
-      },
+      nombreConyuge: "",
+      anoCasamiento: "",
     },
   });
 
   const [resultado, setResultado] = useState("");
 
-  const handleInputChange = (event) => {
-    const { name, value, type, checked } = event.target;
+// Manejo de cambios para formValues
+const handleInputChange = (event) => {
+  const { name, value, type, checked } = event.target;
 
-        if (name in formValues.antepasadoCroata) {
-      setFormValues({
-        ...formValues,
-        [name]: type === "checkbox" ? checked : value,
-        antepasadoCroata: {
-          ...formValues.antepasadoCroata,
-          [name]: type === "checkbox" ? checked : value,
-        },
-      });
-    } else {
-      setFormValues({
-        ...formValues,
-                [name]: type === "checkbox" ? checked : value,
-      });
+  setFormValues({
+    ...formValues,
+    [name]: type === "checkbox" ? checked : value,
+  });
+};
 
-        }
-  };
+// Manejo de cambios exclusivo para antepasadoCroata
+const handleAntepasadoInputChange = (event) => {
+  const { name, value, type, checked } = event.target;
+
+  setFormValues({
+    ...formValues,
+    antepasadoCroata: {
+      ...formValues.antepasadoCroata,
+      [name]: type === "checkbox" ? checked : value,
+    },
+  });
+};
+
 
   const handleArrayChange = (event, index, arrayName) => {
     const newArray = [...formValues[arrayName]];
@@ -114,8 +115,8 @@ const Formulario = () => {
         {
           institucion: "",
           nombreCarrera: "",
-          fechaDesde: "",
-          fechaHasta: "",
+          anoInicio: "",
+          anoFin: "",
           logros: "",
         },
       ],
@@ -311,10 +312,8 @@ const Formulario = () => {
         ocupacionDestino:
           "En Tocopilla trabajó en las pulperias que abastecian de carne a las salitreras. Posteriormente, instalo 4 carnicerias en pleno centro de la ciudad, donde trabajo por años junto a su hermano Martin. También fue integrante del Directorio de la Sociedad Yugoslava de Socorros Mutuos de Tocopilla.",
         seCaso: true,
-        pareja: {
-          nombreConyuge: "Demofila Ors",
-          anoCasamiento: "1914",
-        },
+        nombreConyuge: "Demofila Ors",
+        anoCasamiento: "1914",
       },
       interesCroatas:
         "Quiero obtener la ciudadania Croata para poder conectarme con mis raices y poder estar más cerca de lo que vivieron mis antepasados. Tengo una conexión muy fuerte con el Estado Croata que lo vivo a través de su cultura y tradiciones.",
@@ -678,14 +677,14 @@ const Formulario = () => {
             type="text"
             name="nombre"
             value={formValues.antepasadoCroata.nombre}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Nombre"
             required
           />
           <select
             name="parentesco"
             value={formValues.antepasadoCroata.parentesco}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             required
           >
             <option value="">Seleccionar parentesco</option>
@@ -698,7 +697,7 @@ const Formulario = () => {
             type={date4 ? "date" : "text"}
             name="fechaNacimientoA"
             value={formValues.antepasadoCroata.fechaNacimientoA}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             onClick={(e) => setDate4("01-01-2000")}
             onInput={(e) => setDate4(e.target.value)}
             placeholder="fechaNacimiento     (Click en Calendario)"
@@ -709,7 +708,7 @@ const Formulario = () => {
             type="text"
             name="lugarNacimientoA"
             value={formValues.antepasadoCroata.lugarNacimientoA}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Lugar de Nacimiento"
             required
           />
@@ -717,7 +716,7 @@ const Formulario = () => {
             type="text"
             name="nombrePadre"
             value={formValues.antepasadoCroata.nombrePadre}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Nombre del Padre"
                       
             />
@@ -725,7 +724,7 @@ const Formulario = () => {
             type="text"
             name="nombreMadre"
             value={formValues.antepasadoCroata.nombreMadre}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Nombre de la Madre"
             
           />
@@ -733,7 +732,7 @@ const Formulario = () => {
             type={date5 ? "date" : "text"}
             name="fechaFallecimiento"
             value={formValues.antepasadoCroata.fechaFallecimiento}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             onClick={(e) => setDate5("01-01-2000")}
             onInput={(e) => setDate5(e.target.value)}
             placeholder="fechaFallecimiento     (Click en Calendario)"
@@ -743,7 +742,7 @@ const Formulario = () => {
             type="text"
             name="lugarFallecimiento"
             value={formValues.antepasadoCroata.lugarFallecimiento}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Lugar de Fallecimiento"
             required
           />
@@ -751,7 +750,7 @@ const Formulario = () => {
             type="number"
             name="anoEmigracion"
             value={formValues.antepasadoCroata.anoEmigracion}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Año de emigración"
             required
           />
@@ -759,7 +758,7 @@ const Formulario = () => {
             type="text"
             name="ciudadEmigro"
             value={formValues.antepasadoCroata.ciudadEmigro}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Ciudad a la que emigró"
             required
           />
@@ -767,7 +766,7 @@ const Formulario = () => {
             type="text"
             name="paisEmigro"
             value={formValues.antepasadoCroata.paisEmigro}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="País al que emigró"
             required
           />
@@ -776,7 +775,7 @@ const Formulario = () => {
             rows={6}
             name="motivoEmigracion"
             value={formValues.antepasadoCroata.motivoEmigracion}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Motivo de la emigración
             Ej:
               Huir de la Guerra
@@ -789,7 +788,7 @@ const Formulario = () => {
             rows={5}
             name="ocupacionDestino"
             value={formValues.antepasadoCroata.ocupacionDestino}
-            onChange={handleInputChange}
+            onChange={handleAntepasadoInputChange}
             placeholder="Ocupación en el país de destino
             Principales actividades a las que se dedicó en el pais al que emigró
             Organizaciones Croatas en las que haya participado
@@ -805,7 +804,7 @@ const Formulario = () => {
                 name="seCaso"
                 className="custom-checkbox"
                 checked={formValues.antepasadoCroata.seCaso}
-                onChange={handleInputChange}
+                onChange={handleAntepasadoInputChange}
               />
             </label>
           </div>
@@ -814,16 +813,16 @@ const Formulario = () => {
               <input
                 type="text"
                 name="nombreConyuge"
-                value={formValues.antepasadoCroata.pareja.nombreConyuge}
-                onChange={handleInputChange}
+                value={formValues.antepasadoCroata.nombreConyuge}
+                onChange={handleAntepasadoInputChange}
                 placeholder="Nombre del cónyuge"
                 required
               />
               <input
                 type="number"
                 name="anoCasamiento"
-                value={formValues.antepasadoCroata.pareja.anoCasamiento}
-                onChange={handleInputChange}
+                value={formValues.antepasadoCroata.anoCasamiento}
+                onChange={handleAntepasadoInputChange}
                 placeholder="Año Casamiento"
               />
             </div>
