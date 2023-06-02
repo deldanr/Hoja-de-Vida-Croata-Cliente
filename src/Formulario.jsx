@@ -14,7 +14,7 @@ const Formulario = () => {
   const [date5, setDate5] = useState("");
   
   const [formValues, setFormValues] = useState({
-    creatividad: "",
+    creatividad: 0.4,
     nombreCompleto: "",
     fechaNacimiento: "",
     lugarNacimiento: "",
