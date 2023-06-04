@@ -46,13 +46,15 @@ function InstruccionesModal() {
           textAlign: 'justify'
         }}
       >
-        <h2>Bienvenido(a)</h2>
-        <p>Esta es una herramienta que te permitira crear de forma sencilla tu Hoja de Vida para el trámite de ciudadania Croata.</p>
-        <p>Para empezar debes completa todos los datos del formulario. Si no tienes hijos puedes presionar la "X" y eliminar la casilla. Lo mismo con los datos académicos en caso de no querer incluirlos.</p>
-        <p>Si tienes dudas, puedes presionar el botón "Llenar con datos de prueba" para ver un ejemplo.</p>
-        <p>Recuerda, no almacenamos ningún tipo de información, por lo que deberás volver a ingresar la información si quieres hacer un cambio.</p>
-        <p>Una vez que termines, nuestra inteligencia artificial te presentará la Hoja de Vida en español y si estás de acuerdo, presiona traducir. Actualmente demora de 30 segundos a 1 minuto en generarse, paciencia.</p>
+        <h2>Bienvenido(a) a Croat-IA Umjetna Inteligencija</h2>
+        <p>Esta es una herramienta que te permitirá crear de forma sencilla tu Hoja de Vida para el trámite de ciudadanía Croata.</p>
+        <p>Para empezar, debes completa todos los datos siguiendo las indicaciones señaladas en cada campo del formulario.
+En algunos casos podrás observar una “X”, esta te permitirá eliminar un grupo de datos erróneos que no quieras incluir.</p>
+        <p>Si tienes dudas sobre el contenido a completar, puedes presionar el botón "Llenar con datos de prueba" para ver un ejemplo, recuerda ajustarlos a tu realidad personal. No te compliques en ser específico, ya que nuestra Inteligencia Artificial se encarga de ordenar la redacción de los párrafos.</p>
+        <p>Importante, no almacenamos ningún tipo de información personal.</p>
+        <p>Una vez que termines, nuestra inteligencia artificial te presentará la Hoja de Vida en español, la cual podrás editar. Una vez estes listo(a) presiona “traducir”. Actualmente demora de 30 segundos a 1 minuto en generar la hoja de vida, así que ten paciencia. </p>
         <p>Esta es una herramienta gratuita, sin embargo, tiene un costo de mantención. Si deseas cooperar con nuestro proyecto, <a href="https://www.flow.cl/btn.php?token=udyjpdb">CLICK AQUÍ.</a></p>
+
         <button onClick={closeModal}>Cerrar</button>
       </div>
     </div>

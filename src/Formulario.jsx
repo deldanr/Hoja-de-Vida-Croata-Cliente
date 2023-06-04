@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./styles.css"; // Importa el archivo CSS
 
 import DOMPurify from "dompurify";
 import html2pdf from "html2pdf.js";
 
+import { CKEditor } from "ckeditor4-react";
+import { PacmanLoader } from 'react-spinners';
+
 const Formulario = () => {
+    let [color, setColor] = useState("silver");
+  
   const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo estado para controlar el envío del formulario
   const [date, setDate] = useState("");
   const [date2, setDate2] = useState("");
   const [date3, setDate3] = useState("");
   const [date4, setDate4] = useState("");
   const [date5, setDate5] = useState("");
-  
+
   const [formValues, setFormValues] = useState({
     creatividad: 0.4,
     nombreCompleto: "",
@@ -33,6 +38,7 @@ const Formulario = () => {
         nombreCarrera: "",
         anoInicio: "",
         anoFin: "",
+        enCurso: false,
         logros: "",
       },
     ],
@@ -65,35 +71,42 @@ const Formulario = () => {
     },
   });
 
-  const [resultado, setResultado] = useState("");
+  const [estaEditando, setEstaEditando] = useState(false);
+  const [resultado, setResultado] = useState(""); // Tu HTML inicial aquí
 
-// Manejo de cambios para formValues
-const handleInputChange = (event) => {
-  const { name, value, type, checked } = event.target;
+  const manejarClickEditarGuardar = () => {
+    setEstaEditando(!estaEditando);
+  };
 
-  setFormValues({
-    ...formValues,
-    [name]: type === "checkbox" ? checked : value,
-  });
-};
+  // Manejo de cambios para formValues
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
 
-// Manejo de cambios exclusivo para antepasadoCroata
-const handleAntepasadoInputChange = (event) => {
-  const { name, value, type, checked } = event.target;
-
-  setFormValues({
-    ...formValues,
-    antepasadoCroata: {
-      ...formValues.antepasadoCroata,
+    setFormValues({
+      ...formValues,
       [name]: type === "checkbox" ? checked : value,
-    },
-  });
-};
+    });
+  };
 
+  // Manejo de cambios exclusivo para antepasadoCroata
+  const handleAntepasadoInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+
+    setFormValues({
+      ...formValues,
+      antepasadoCroata: {
+        ...formValues.antepasadoCroata,
+        [name]: type === "checkbox" ? checked : value,
+      },
+    });
+  };
 
   const handleArrayChange = (event, index, arrayName) => {
     const newArray = [...formValues[arrayName]];
-    newArray[index][event.target.name] = event.target.value;
+    newArray[index][event.target.name] =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
     setFormValues({
       ...formValues,
       [arrayName]: newArray,
@@ -117,6 +130,7 @@ const handleAntepasadoInputChange = (event) => {
           nombreCarrera: "",
           anoInicio: "",
           anoFin: "",
+          enCurso: false,
           logros: "",
         },
       ],
@@ -158,7 +172,7 @@ const handleAntepasadoInputChange = (event) => {
     });
   };
 
-  const handleSubmit = async (event) => {
+ const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -166,7 +180,7 @@ const handleAntepasadoInputChange = (event) => {
     }
 
     setIsSubmitting(true); // Establecer el estado de envío a true
-        console.log(formValues);
+    console.log(formValues);
     try {
       const response = await axios.post(
         "https://hoja-de-vida-1--danieleldan.repl.co/api/hoja_espanol",
@@ -194,12 +208,15 @@ const handleAntepasadoInputChange = (event) => {
     setIsSubmitting(true); // Establecer el estado de envío a true
 
     try {
-      const response = await axios.post("https://hoja-de-vida-1--danieleldan.repl.co/api/traducir", {
-        resultado: resultado,
-      });
+      const response = await axios.post(
+        "https://hoja-de-vida-1--danieleldan.repl.co/api/traducir",
+        {
+          resultado: resultado,
+        }
+      );
       const sanitizedHTML = DOMPurify.sanitize(response.data.result);
       setResultado(sanitizedHTML);
-      
+
       // Después de la llamada a la API
       setIsSubmitting(false); // Establecer el estado de envío a false
     } catch (error) {
@@ -221,7 +238,7 @@ const handleAntepasadoInputChange = (event) => {
 
     html2pdf().set(opt).from(element).save();
   };
-/*
+  /*
   const imprimirPDF = () => {
     const element = document.getElementById("result");
 
@@ -278,6 +295,7 @@ const handleAntepasadoInputChange = (event) => {
           nombreCarrera: "Ingeniería Civil Industrial",
           anoInicio: "2010-09-01",
           anoFin: "2014-06-30",
+          enCurso: false,
           logros: "Graduado con honores",
         },
       ],
@@ -290,7 +308,7 @@ const handleAntepasadoInputChange = (event) => {
       logrosLaborales:
         "Creación de aplicación para completación de Hoja de Vida para trámite de ciudadania Croata.",
       aporte:
-        "A través de mi trabajo puedo aportar valor a las empresas Croatas mediante la creación de herramientas que les permitan ser más eficientes y así alcanzar sus objetivos, creando nuevos empleos para ciudadanos Croatas y así mejorando su calidad de vida.",
+        "A través de mi trabajo puedo aportar valor a las empresas Croatas mediante la creación de herramientas que les permitan ser más eficientes y productivas, alcanzando de mejor forma sus objetivos. Por otra parte, podría crear nuevos empleos para ciudadanos Croatas y así mejora su calidad de vida y contribuir al desarrollo del país.",
       familiaresCroatas: [
         { nombreCompleto: "Valentin Eldan", parentesco: "Primo" },
         { nombreCompleto: "Petar Eldan", parentesco: "Tío" },
@@ -308,7 +326,11 @@ const handleAntepasadoInputChange = (event) => {
         ciudadEmigro: "Tocopilla",
         paisEmigro: "Chile",
         motivoEmigracion:
-          "Producto de la plaga de filoxera que azotó a la isla de Vis, mi Bisabuelo decidió emigrar a Chile en busca de nuevas oportunidades.",
+          "Ejemplo 1:\n"+
+"Mi antepasado croata decidió emigrar de Croacia a principios del siglo XX debido a las difíciles condiciones económicas que enfrentaba en su país natal. En ese momento, Croacia experimentaba inestabilidad política y económica, lo que dificultaba encontrar empleo y asegurar un futuro próspero. Mi antepasado anhelaba una vida mejor para sí mismo y para su familia, y la idea de buscar nuevas oportunidades en un lugar lejano como Chile parecía una opción prometedora. Fue en busca de una estabilidad económica y la posibilidad de construir un mejor futuro que tomó la valiente decisión de emigrar y establecerse en tierras chilenas."+
+"\n"+
+"Ejemplo 2:\n"+
+"Mi bisabuelo, un orgulloso croata de Dalmacia, tomó la decisión de abandonar su amada tierra natal a finales del siglo XIX debido a la difícil situación causada por la plaga de la filoxera. Esta plaga había devastado los viñedos de la región, que eran una fuente importante de sustento para muchas familias. La filoxera había diezmado las vides y arruinado la industria vitivinícola, dejando a muchas personas en una situación desesperada. Ante la falta de perspectivas económicas y la lucha por sobrevivir, mi bisabuelo tomó la dolorosa decisión de emigrar en busca de nuevas oportunidades en otro lugar, dejando atrás sus raíces y esperando encontrar un futuro mejor para él y su familia.",
         ocupacionDestino:
           "En Tocopilla trabajó en las pulperias que abastecian de carne a las salitreras. Posteriormente, instalo 4 carnicerias en pleno centro de la ciudad, donde trabajo por años junto a su hermano Martin. También fue integrante del Directorio de la Sociedad Yugoslava de Socorros Mutuos de Tocopilla.",
         seCaso: true,
@@ -316,7 +338,12 @@ const handleAntepasadoInputChange = (event) => {
         anoCasamiento: "1914",
       },
       interesCroatas:
-        "Quiero obtener la ciudadania Croata para poder conectarme con mis raices y poder estar más cerca de lo que vivieron mis antepasados. Tengo una conexión muy fuerte con el Estado Croata que lo vivo a través de su cultura y tradiciones.",
+'Ejemplo 1:\n' +
+"Como descendiente de croatas y criado en una familia que ha mantenido fuertes vínculos con la cultura croata, deseo obtener la ciudadanía para fortalecer mi conexión con mi país de origen. A lo largo de los años, he aprendido sobre la historia, las tradiciones y los valores croatas, y me siento profundamente arraigado en esa identidad. Obtener la ciudadanía croata me permitiría preservar y celebrar mi herencia, así como participar activamente en la vida social y política de Croacia. Además, tener la ciudadanía abriría un abanico de oportunidades tanto a nivel personal como profesional, ya que me brindaría la posibilidad de vivir y trabajar en Croacia, lo que ampliaría mis horizontes."+
+"\n"+
+"Ejemplo 2:\n"+
+"Para mí, obtener la ciudadanía croata va más allá de un simple documento. Es un medio para honrar a mis antepasados y mantener viva la memoria de mi familia. Aunque nací y crecí fuera de Croacia, siempre he sentido un profundo amor por mi país de origen. La ciudadanía croata sería un símbolo tangible de mi identidad y un recordatorio constante de mis raíces. Además, me brindaría la oportunidad de regresar a Croacia con mayor facilidad, conectarme con mi familia extendida y contribuir al desarrollo de la nación que lleva en mi corazón. Estoy emocionado por la posibilidad de experimentar la vida en Croacia de una manera más profunda y significativa, y estoy comprometido en mantener vivas nuestras tradiciones y valores croatas dentro y fuera del país."
+      ,
     });
   };
 
@@ -324,14 +351,24 @@ const handleAntepasadoInputChange = (event) => {
     <div className="container">
       {resultado && (
         <div>
-          <div id="result">
+          {estaEditando ? (
+            <CKEditor
+              config={{ initialData: resultado }}
+              initData={resultado}
+              onChange={(evt) => setResultado(evt.editor.getData())}
+            />
+          ) : (
             <div
+              id="result"
               className="result"
               dangerouslySetInnerHTML={{ __html: resultado }}
-            ></div>
-          </div>
+            />
+          )}
+          <button onClick={manejarClickEditarGuardar}>
+            {estaEditando ? "Guardar" : "Editar"}
+          </button>
           <button onClick={imprimirPDF2}>Imprimir en PDF</button>
-          <button onClick={modificarFormulario}>Modificar el Formulario</button>
+          <button onClick={modificarFormulario}>Volver al Formulario</button>
           <button
             onClick={handleSubmitTraducir}
             type="submit"
@@ -340,8 +377,11 @@ const handleAntepasadoInputChange = (event) => {
           >
             {isSubmitting ? "Traduciendo..." : "Traducir"}
           </button>
+          <div align="center">
+          <PacmanLoader color={color} loading={isSubmitting}/></div>
         </div>
       )}
+
       {!resultado && (
         <form onSubmit={handleSubmit} className="form">
           {/* Datos Personales */}
@@ -446,7 +486,6 @@ const handleAntepasadoInputChange = (event) => {
                 className="custom-checkbox"
                 checked={formValues.sinhijos}
                 onChange={handleInputChange}
-
               />
             </label>
           </div>
@@ -459,16 +498,16 @@ const handleAntepasadoInputChange = (event) => {
                 value={hijo.nombre}
                 onChange={(event) => handleArrayChange(event, index, "hijos")}
                 placeholder={`Nombre del hijo(a) ${index + 1}`}
-            disabled={formValues.sinhijos}
-            required={!formValues.sinhijos}
+                disabled={formValues.sinhijos}
+                required={!formValues.sinhijos}
               />
               <select
                 className="input"
                 name="sexo"
                 value={hijo.sexo}
                 onChange={(event) => handleArrayChange(event, index, "hijos")}
-            disabled={formValues.sinhijos}
-            required={!formValues.sinhijos}
+                disabled={formValues.sinhijos}
+                required={!formValues.sinhijos}
               >
                 <option value="">Sexo</option>
                 <option value="Hombre">Hombre</option>
@@ -482,8 +521,8 @@ const handleAntepasadoInputChange = (event) => {
                 value={hijo.edad}
                 onChange={(event) => handleArrayChange(event, index, "hijos")}
                 placeholder={`Edad del hijo(a) ${index + 1}`}
-            disabled={formValues.sinhijos}
-            required={!formValues.sinhijos}
+                disabled={formValues.sinhijos}
+                required={!formValues.sinhijos}
               />
               <button type="button" onClick={() => removeHijo(index)}>
                 X
@@ -530,18 +569,36 @@ const handleAntepasadoInputChange = (event) => {
                 }
                 required
               />
-              <input
-                type={date3 ? "date" : "text"}
-                name="anoFin"
-                value={academico.anoFin}
-                onClick={(e) => setDate3("01-01-2000")}
-                onInput={(e) => setDate3(e.target.value)}
-                onChange={(event) =>
-                  handleArrayChange(event, index, "academicos")
-                }
-                placeholder="Fin Estudios    (Click en calendario) en blanco si esta en curso"
-                
-              />
+              <div className="form-container">
+                <div className="column">
+                  <input
+                    type={date3 ? "date" : "text"}
+                    name="anoFin"
+                    value={academico.anoFin}
+                    onClick={(e) => setDate3("01-01-2000")}
+                    onInput={(e) => setDate3(e.target.value)}
+                    onChange={(event) =>
+                      handleArrayChange(event, index, "academicos")
+                    }
+                    placeholder="Fin Estudios    (Click en calendario) en blanco si esta en curso"
+                    disabled={academico.enCurso}
+                  />
+                </div>
+                <div className="column">
+                  <label>
+                    En curso
+                    <input
+                      type="checkbox"
+                      name="enCurso"
+                      className="custom-checkbox"
+                      checked={academico.enCurso}
+                      onChange={(event) =>
+                        handleArrayChange(event, index, "academicos")
+                      }
+                    />
+                  </label>
+                </div>
+              </div>
               <textarea
                 type="text"
                 rows={4}
@@ -631,6 +688,7 @@ const handleAntepasadoInputChange = (event) => {
             type="text"
             rows={5}
             className="input"
+            maxLength={400}
             name="aporte"
             value={formValues.aporte}
             onChange={handleInputChange}
@@ -700,7 +758,7 @@ const handleAntepasadoInputChange = (event) => {
             onChange={handleAntepasadoInputChange}
             onClick={(e) => setDate4("01-01-2000")}
             onInput={(e) => setDate4(e.target.value)}
-            placeholder="fechaNacimiento     (Click en Calendario)"
+            placeholder="Fecha de Nacimiento     (Click en Calendario)"
             required
           />
 
@@ -717,16 +775,14 @@ const handleAntepasadoInputChange = (event) => {
             name="nombrePadre"
             value={formValues.antepasadoCroata.nombrePadre}
             onChange={handleAntepasadoInputChange}
-            placeholder="Nombre del Padre"
-                      
-            />
+            placeholder="Nombre del Padre - No obligatorio"
+          />
           <input
             type="text"
             name="nombreMadre"
             value={formValues.antepasadoCroata.nombreMadre}
             onChange={handleAntepasadoInputChange}
-            placeholder="Nombre de la Madre"
-            
+            placeholder="Nombre de la Madre - No obligatorio"
           />
           <input
             type={date5 ? "date" : "text"}
@@ -735,7 +791,7 @@ const handleAntepasadoInputChange = (event) => {
             onChange={handleAntepasadoInputChange}
             onClick={(e) => setDate5("01-01-2000")}
             onInput={(e) => setDate5(e.target.value)}
-            placeholder="fechaFallecimiento     (Click en Calendario)"
+            placeholder="Fecha de Fallecimiento     (Click en Calendario)"
             required
           />
           <input
@@ -772,21 +828,25 @@ const handleAntepasadoInputChange = (event) => {
           />
           <textarea
             type="text"
-            rows={6}
+            rows={7}
             name="motivoEmigracion"
+            maxLength={700}
             value={formValues.antepasadoCroata.motivoEmigracion}
             onChange={handleAntepasadoInputChange}
             placeholder="Motivo de la emigración
             Ej:
-              Huir de la Guerra
-              Gran Plaga de la Filoxera
-              Búsqueda de Mejores Oportunidades"
+              Huir de la(s) Guerra(s)
+              Plaga de la Filoxera
+              Búsqueda de Mejores Oportunidades
+              Familiares ya habian emigrado
+              Persecusión étnica y/o política"
             required
           />
           <textarea
             type="text"
             rows={5}
             name="ocupacionDestino"
+            maxLength={400}
             value={formValues.antepasadoCroata.ocupacionDestino}
             onChange={handleAntepasadoInputChange}
             placeholder="Ocupación en el país de destino
@@ -829,19 +889,25 @@ const handleAntepasadoInputChange = (event) => {
           )}
 
           {/* Interés en Croacia */}
-          <h2>Interés en Croacia</h2>
+          <h2>Interés en Obtener la Ciudadanía Croata</h2>
           <textarea
             name="interesCroatas"
-            rows={10}
+            rows={12}
+            maxLength={800}
             value={formValues.interesCroatas}
             onChange={handleInputChange}
             placeholder="¿Por qué está interesado(a) en la Ciudadania Croata?
             Ej: 
-               Conexión con mi antepasado
-               Vivir en Croacia
-               Trabajar en Croacia
-               Lazos culturales y sociales
-               Compromiso familiar"
+Vínculos culturales y emocionales: Muchos descendientes de croatas mantienen fuertes lazos culturales y emocionales con su país de origen. Obtener la ciudadanía croata permite fortalecer y preservar su identidad y herencia croata, así como mantener una conexión más estrecha con su cultura, tradiciones y lengua.
+
+Derechos y beneficios: Obtener la ciudadanía croata brinda a los miembros de la diáspora croata una serie de derechos y beneficios en Croacia. Esto incluye el derecho a vivir, trabajar y estudiar en Croacia sin restricciones.
+
+Facilitar la relación con Croacia: Al obtener la ciudadanía croata, los miembros de la diáspora croata pueden establecer una relación más sólida con Croacia. Esto les permite participar activamente en la vida política, social y económica del país.
+
+Oportunidades laborales y empresariales: La ciudadanía croata puede abrir puertas a oportunidades laborales y empresariales en Croacia y la Unión Europea en general.
+
+Seguridad y estabilidad: Para algunos miembros de la diáspora croata, obtener la ciudadanía croata puede proporcionar una mayor seguridad y estabilidad.
+            "
             required
           />
 
@@ -860,9 +926,22 @@ const handleAntepasadoInputChange = (event) => {
               value={formValues.creatividad}
               onChange={handleInputChange}
             />
-          <p className="description">Desplaza la barra para ajustar la creatividad de la Inteligencia Artificial</p>
-          <p className="range-label">0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy Creativo</p>
-          <p className="adjustment">Creatividad: <span className="creativity-value">{formValues.creatividad}</span></p>
+            <div align="center">
+              <p className="range-label">
+              0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy
+              Creativo
+            </p>
+            <p className="description">
+              Desplaza la barra para ajustar la creatividad de la Inteligencia
+              Artificial
+            </p>
+
+            <p>NOTA: Creatividad al máximo podría generar información imprecisa.</p>
+            <p className="adjustment">
+              Creatividad:{" "}
+              <span className="creativity-value">{formValues.creatividad}</span>
+            </p>
+              </div>
           </div>
           <button
             type="submit"
@@ -873,6 +952,9 @@ const handleAntepasadoInputChange = (event) => {
               ? "Generando con Inteligencia Artificial..."
               : "Enviar"}
           </button>
+          <div align="center">
+         <PacmanLoader color={color} loading={isSubmitting}/>
+            </div>
         </form>
       )}
     </div>

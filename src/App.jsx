@@ -4,6 +4,7 @@ import Modal from "./modal";
 import logo from "./logo.png";
 import "./styles.css"; // Importa el archivo CSS
 
+
 const handleClick = () => {
   // URL a la que se redirigirá al hacer clic en el botón
   const url = "https://www.flow.cl/btn.php?token=udyjpdb";
