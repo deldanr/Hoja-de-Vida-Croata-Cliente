@@ -1,9 +1,12 @@
 import React from "react";
-import Formulario from "./Formulario";
-import Modal from "./modal";
-import logo from "./logo.png";
-import "./styles.css"; // Importa el archivo CSS
+import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+import NavBar from "./components/NavBar";
+
+import Formulario from "./pages/Formulario";
+import HomePage from "./pages/HomePage";
+import Contacto from "./pages/Contacto"
+import "./styles.css";
 
 const handleClick = () => {
   // URL a la que se redirigirá al hacer clic en el botón
@@ -14,31 +17,21 @@ const handleClick = () => {
 };
 
 function App() {
-  //const [formData, setFormData] = useState(null);
-
-  /*const handleSubmit = (data) => {
-    setFormData(data);
-  };*/
-
   return (
-
-      <><div className="App">
-        <Modal />
-        <div align="center">
-          <img className="logo" src={logo} alt="Logo"/>
-          <h1>Formulario Hoja de Vida</h1>
-        </div>
-        <Formulario />
-      </div>
-
+    <Router>
+      <NavBar />
+      <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/formulario" element={<Formulario />} />
+      <Route path="/contacto" element={<Contacto />} />
+      </Routes>
       <div className="footer">
         <p align="center">
-        <button onClick={handleClick}>DONAR</button><br></br>
-          Disclaimer: No almacenamos ningún tipo de información personal
-          utilizada en la siguiente plataforma.
+        <button onClick={handleClick}>DONAR</button>
+        <br></br>
         </p>
-      </div></>
-
+      </div>
+    </Router>
   );
 }
 

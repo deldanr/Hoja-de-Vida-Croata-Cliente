@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import "./styles.css"; // Importa el archivo CSS
-
 import DOMPurify from "dompurify";
+import Modal2 from "../components/Modal2";
+import Modal from "../components/Modal";
 import html2pdf from "html2pdf.js";
-
 import { CKEditor } from "ckeditor4-react";
-import { PacmanLoader } from 'react-spinners';
+import { PacmanLoader } from "react-spinners";
+
+import "../styles.css";
 
 const Formulario = () => {
-    let [color, setColor] = useState("silver");
-  
+  let [color, setColor] = useState("silver");
+
   const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo estado para controlar el envío del formulario
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [acepto, setAcepto] = useState(true); // Para aceptar terminos y condiciones
+
   const [date, setDate] = useState("");
   const [date2, setDate2] = useState("");
   const [date3, setDate3] = useState("");
@@ -72,7 +77,11 @@ const Formulario = () => {
   });
 
   const [estaEditando, setEstaEditando] = useState(false);
-  const [resultado, setResultado] = useState(""); // Tu HTML inicial aquí
+  const [resultado, setResultado] = useState("");
+
+  const handleClickModal = () => {
+    setModalVisible(true);
+  };
 
   const manejarClickEditarGuardar = () => {
     setEstaEditando(!estaEditando);
@@ -172,7 +181,7 @@ const Formulario = () => {
     });
   };
 
- const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -180,7 +189,7 @@ const Formulario = () => {
     }
 
     setIsSubmitting(true); // Establecer el estado de envío a true
-    console.log(formValues);
+    
     try {
       const response = await axios.post(
         "https://hoja-de-vida-1--danieleldan.repl.co/api/hoja_espanol",
@@ -271,6 +280,14 @@ const Formulario = () => {
     setResultado("");
   };
 
+  const handleAcepto = () => {
+    if (acepto) {
+      setAcepto(false);
+    } else {
+      setAcepto(true);
+    }
+  };
+
   const fillFormWithTestData = () => {
     setFormValues({
       creatividad: 0.4,
@@ -326,11 +343,11 @@ const Formulario = () => {
         ciudadEmigro: "Tocopilla",
         paisEmigro: "Chile",
         motivoEmigracion:
-          "Ejemplo 1:\n"+
-"Mi antepasado croata decidió emigrar de Croacia a principios del siglo XX debido a las difíciles condiciones económicas que enfrentaba en su país natal. En ese momento, Croacia experimentaba inestabilidad política y económica, lo que dificultaba encontrar empleo y asegurar un futuro próspero. Mi antepasado anhelaba una vida mejor para sí mismo y para su familia, y la idea de buscar nuevas oportunidades en un lugar lejano como Chile parecía una opción prometedora. Fue en busca de una estabilidad económica y la posibilidad de construir un mejor futuro que tomó la valiente decisión de emigrar y establecerse en tierras chilenas."+
-"\n"+
-"Ejemplo 2:\n"+
-"Mi bisabuelo, un orgulloso croata de Dalmacia, tomó la decisión de abandonar su amada tierra natal a finales del siglo XIX debido a la difícil situación causada por la plaga de la filoxera. Esta plaga había devastado los viñedos de la región, que eran una fuente importante de sustento para muchas familias. La filoxera había diezmado las vides y arruinado la industria vitivinícola, dejando a muchas personas en una situación desesperada. Ante la falta de perspectivas económicas y la lucha por sobrevivir, mi bisabuelo tomó la dolorosa decisión de emigrar en busca de nuevas oportunidades en otro lugar, dejando atrás sus raíces y esperando encontrar un futuro mejor para él y su familia.",
+          "Ejemplo 1:\n" +
+          "Mi antepasado croata decidió emigrar de Croacia a principios del siglo XX debido a las difíciles condiciones económicas que enfrentaba en su país natal. En ese momento, Croacia experimentaba inestabilidad política y económica, lo que dificultaba encontrar empleo y asegurar un futuro próspero. Mi antepasado anhelaba una vida mejor para sí mismo y para su familia, y la idea de buscar nuevas oportunidades en un lugar lejano como Chile parecía una opción prometedora. Fue en busca de una estabilidad económica y la posibilidad de construir un mejor futuro que tomó la valiente decisión de emigrar y establecerse en tierras chilenas." +
+          "\n" +
+          "Ejemplo 2:\n" +
+          "Mi bisabuelo, un orgulloso croata de Dalmacia, tomó la decisión de abandonar su amada tierra natal a finales del siglo XIX debido a la difícil situación causada por la plaga de la filoxera. Esta plaga había devastado los viñedos de la región, que eran una fuente importante de sustento para muchas familias. La filoxera había diezmado las vides y arruinado la industria vitivinícola, dejando a muchas personas en una situación desesperada. Ante la falta de perspectivas económicas y la lucha por sobrevivir, mi bisabuelo tomó la dolorosa decisión de emigrar en busca de nuevas oportunidades en otro lugar, dejando atrás sus raíces y esperando encontrar un futuro mejor para él y su familia.",
         ocupacionDestino:
           "En Tocopilla trabajó en las pulperias que abastecian de carne a las salitreras. Posteriormente, instalo 4 carnicerias en pleno centro de la ciudad, donde trabajo por años junto a su hermano Martin. También fue integrante del Directorio de la Sociedad Yugoslava de Socorros Mutuos de Tocopilla.",
         seCaso: true,
@@ -338,17 +355,18 @@ const Formulario = () => {
         anoCasamiento: "1914",
       },
       interesCroatas:
-'Ejemplo 1:\n' +
-"Como descendiente de croatas y criado en una familia que ha mantenido fuertes vínculos con la cultura croata, deseo obtener la ciudadanía para fortalecer mi conexión con mi país de origen. A lo largo de los años, he aprendido sobre la historia, las tradiciones y los valores croatas, y me siento profundamente arraigado en esa identidad. Obtener la ciudadanía croata me permitiría preservar y celebrar mi herencia, así como participar activamente en la vida social y política de Croacia. Además, tener la ciudadanía abriría un abanico de oportunidades tanto a nivel personal como profesional, ya que me brindaría la posibilidad de vivir y trabajar en Croacia, lo que ampliaría mis horizontes."+
-"\n"+
-"Ejemplo 2:\n"+
-"Para mí, obtener la ciudadanía croata va más allá de un simple documento. Es un medio para honrar a mis antepasados y mantener viva la memoria de mi familia. Aunque nací y crecí fuera de Croacia, siempre he sentido un profundo amor por mi país de origen. La ciudadanía croata sería un símbolo tangible de mi identidad y un recordatorio constante de mis raíces. Además, me brindaría la oportunidad de regresar a Croacia con mayor facilidad, conectarme con mi familia extendida y contribuir al desarrollo de la nación que lleva en mi corazón. Estoy emocionado por la posibilidad de experimentar la vida en Croacia de una manera más profunda y significativa, y estoy comprometido en mantener vivas nuestras tradiciones y valores croatas dentro y fuera del país."
-      ,
+        "Ejemplo 1:\n" +
+        "Como descendiente de croatas y criado en una familia que ha mantenido fuertes vínculos con la cultura croata, deseo obtener la ciudadanía para fortalecer mi conexión con mi país de origen. A lo largo de los años, he aprendido sobre la historia, las tradiciones y los valores croatas, y me siento profundamente arraigado en esa identidad. Obtener la ciudadanía croata me permitiría preservar y celebrar mi herencia, así como participar activamente en la vida social y política de Croacia. Además, tener la ciudadanía abriría un abanico de oportunidades tanto a nivel personal como profesional, ya que me brindaría la posibilidad de vivir y trabajar en Croacia, lo que ampliaría mis horizontes." +
+        "\n" +
+        "Ejemplo 2:\n" +
+        "Para mí, obtener la ciudadanía croata va más allá de un simple documento. Es un medio para honrar a mis antepasados y mantener viva la memoria de mi familia. Aunque nací y crecí fuera de Croacia, siempre he sentido un profundo amor por mi país de origen. La ciudadanía croata sería un símbolo tangible de mi identidad y un recordatorio constante de mis raíces. Además, me brindaría la oportunidad de regresar a Croacia con mayor facilidad, conectarme con mi familia extendida y contribuir al desarrollo de la nación que lleva en mi corazón. Estoy emocionado por la posibilidad de experimentar la vida en Croacia de una manera más profunda y significativa, y estoy comprometido en mantener vivas nuestras tradiciones y valores croatas dentro y fuera del país.",
     });
   };
 
   return (
     <div className="container">
+      <Modal />
+      <h1>Hoja de Vida</h1>
       {resultado && (
         <div>
           {estaEditando ? (
@@ -378,13 +396,15 @@ const Formulario = () => {
             {isSubmitting ? "Traduciendo..." : "Traducir"}
           </button>
           <div align="center">
-          <PacmanLoader color={color} loading={isSubmitting}/></div>
+            <PacmanLoader color={color} loading={isSubmitting} />
+          </div>
         </div>
       )}
 
       {!resultado && (
         <form onSubmit={handleSubmit} className="form">
           {/* Datos Personales */}
+          <section>
           <h2>Datos Personales</h2>
           <div className="form-container">
             <div className="column">
@@ -474,8 +494,10 @@ const Formulario = () => {
               />
             </div>
           </div>
-
+          </section>
+          
           {/* Datos de los hijos */}
+          <section>
           <h2>Datos de los hijos</h2>
           <div>
             <label>
@@ -532,8 +554,10 @@ const Formulario = () => {
           <button type="button" onClick={addHijo}>
             Agregar otro hijo
           </button>
-
+          </section>
+          
           {/* Datos académicos */}
+          <section>
           <h2>Datos académicos</h2>
           {formValues.academicos.map((academico, index) => (
             <div key={index}>
@@ -618,11 +642,12 @@ const Formulario = () => {
           <button type="button" onClick={addAcademico}>
             Agregar otro dato académico
           </button>
-
+          </section>
+          
           {/* Datos laborales */}
+          <section>
           <h2>Datos laborales</h2>
-          <div>
-            <label>
+          <label>
               Cesante o desocupado
               <input
                 type="checkbox"
@@ -631,8 +656,7 @@ const Formulario = () => {
                 checked={formValues.cesante}
                 onChange={handleInputChange}
               />
-            </label>
-          </div>
+          </label>
           <input
             type="text"
             className="input"
@@ -673,7 +697,6 @@ const Formulario = () => {
             disabled={formValues.cesante}
             required={!formValues.cesante}
           />
-
           <input
             type="text"
             className="input"
@@ -696,7 +719,10 @@ const Formulario = () => {
             disabled={formValues.cesante}
             required={!formValues.cesante}
           />
+          </section>
+          
           {/* Datos de familiares croatas */}
+          <section>
           <h2>Datos de familiares con ciudadania Croata</h2>
           {formValues.familiaresCroatas.map((familiar, index) => (
             <div key={index}>
@@ -728,8 +754,10 @@ const Formulario = () => {
           <button type="button" onClick={addFamiliarCroata}>
             Agregar otro familiar croata
           </button>
-
+          </section>
+          
           {/* Datos del antepasado croata */}
+          <section>
           <h2>Antepasado Croata</h2>
           <input
             type="text"
@@ -750,7 +778,6 @@ const Formulario = () => {
             <option value="Bisabuelo(a)">Bisabuelo(a)</option>
             <option value="Abuelo(a)">Abuelo(a)</option>
           </select>
-
           <input
             type={date4 ? "date" : "text"}
             name="fechaNacimientoA"
@@ -761,7 +788,6 @@ const Formulario = () => {
             placeholder="Fecha de Nacimiento     (Click en Calendario)"
             required
           />
-
           <input
             type="text"
             name="lugarNacimientoA"
@@ -855,7 +881,6 @@ const Formulario = () => {
             Manifestación del lazo Croata en el país al que emigró"
             required
           />
-
           <div>
             <label>
               ¿Se casó?
@@ -887,8 +912,10 @@ const Formulario = () => {
               />
             </div>
           )}
-
+          </section>
+          
           {/* Interés en Croacia */}
+          <section>
           <h2>Interés en Obtener la Ciudadanía Croata</h2>
           <textarea
             name="interesCroatas"
@@ -910,51 +937,70 @@ Seguridad y estabilidad: Para algunos miembros de la diáspora croata, obtener l
             "
             required
           />
+          </section>
 
           {/* Botón de envío */}
-          <button type="button" onClick={fillFormWithTestData}>
+          <section>
+            <button type="button" onClick={fillFormWithTestData}>
             Llenar con datos de prueba
-          </button>
-          <div>
-            <input
-              type="range"
-              name="creatividad"
-              className="slider"
-              min="0"
-              max="1"
-              step="0.1"
-              value={formValues.creatividad}
-              onChange={handleInputChange}
-            />
-            <div align="center">
-              <p className="range-label">
-              0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy
-              Creativo
-            </p>
-            <p className="description">
-              Desplaza la barra para ajustar la creatividad de la Inteligencia
-              Artificial
-            </p>
-
-            <p>NOTA: Creatividad al máximo podría generar información imprecisa.</p>
-            <p className="adjustment">
-              Creatividad:{" "}
-              <span className="creativity-value">{formValues.creatividad}</span>
-            </p>
+            </button>
+            <div>
+              <input
+                type="range"
+                name="creatividad"
+                className="slider"
+                min="0"
+                max="1"
+                step="0.1"
+                value={formValues.creatividad}
+                onChange={handleInputChange}
+              />
+              <div align="center">
+                <p className="range-label">
+                  0: Determinista | 0.4: Recomendado | 0.7: Creativo | 1: Muy
+                  Creativo
+                </p>
+                <p className="description">
+                  Desplaza la barra para ajustar la creatividad de la Inteligencia
+                  Artificial
+                  <br />
+                  NOTA: Creatividad al máximo podría generar información
+                  imprecisa.
+                </p>
+                <p className="adjustment">
+                  Creatividad:{" "}
+                  <span className="creativity-value">
+                    {formValues.creatividad}
+                  </span>
+                </p>
               </div>
-          </div>
-          <button
-            type="submit"
-            className="button-final"
-            disabled={isSubmitting}
-          >
+              <div align="center">
+                <a href="#" onClick={handleClickModal}>
+                  Acepto los Términos y Condiciones
+                </a>
+                <input
+                  type="checkbox"
+                  name="acepto"
+                  onChange={handleAcepto}
+                ></input>
+                {modalVisible && (
+                  <Modal2 onClose={() => setModalVisible(false)} />
+                )}
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="button-final"
+              disabled={isSubmitting || acepto}
+            >
             {isSubmitting
               ? "Generando con Inteligencia Artificial..."
-              : "Enviar"}
-          </button>
-          <div align="center">
-         <PacmanLoader color={color} loading={isSubmitting}/>
+              : "Crear Hoja de Vida"}
+            </button>
+            <div align="center">
+              <PacmanLoader color={color} loading={isSubmitting} />
             </div>
+          </section>
         </form>
       )}
     </div>
