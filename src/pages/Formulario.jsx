@@ -3,9 +3,11 @@ import axios from "axios";
 import DOMPurify from "dompurify";
 import Modal2 from "../components/Modal2";
 import Modal from "../components/Modal";
+import HojaDeVida from "../components/HojadeVida";
 import html2pdf from "html2pdf.js";
 import { CKEditor } from "ckeditor4-react";
 import { PacmanLoader } from "react-spinners";
+import { renderToString } from 'react-dom/server';
 
 import "../styles.css";
 
@@ -77,15 +79,22 @@ const Formulario = () => {
   });
 
   const [estaEditando, setEstaEditando] = useState(false);
-  const [resultado, setResultado] = useState("");
-
+  const [loedito, setloedito] = useState(false);
+  const [resultado, setResultado] = useState(false);
+  const [respuesta, setRespuesta] = useState("");
+  const [hojadevidaHTML, setHojadeVida] = useState("");
+  
   const handleClickModal = () => {
     setModalVisible(true);
   };
 
-  const manejarClickEditarGuardar = () => {
-    setEstaEditando(!estaEditando);
-  };
+const manejarClickEditarGuardar = () => {
+  if (!estaEditando) {
+    setloedito(true);
+  }
+  setEstaEditando(!estaEditando);
+};
+
 
   // Manejo de cambios para formValues
   const handleInputChange = (event) => {
@@ -189,15 +198,23 @@ const Formulario = () => {
     }
 
     setIsSubmitting(true); // Establecer el estado de envío a true
-    
+   
     try {
       const response = await axios.post(
         "https://hoja-de-vida-1--danieleldan.repl.co/api/hoja_espanol",
         formValues
       );
-
-      const sanitizedHTML = DOMPurify.sanitize(response.data.result);
-      setResultado(sanitizedHTML);
+      
+      // Intenta establecer los estados después de la llamada API
+      try {
+        setRespuesta(response.data);
+        setHojadeVida(renderToString(<HojaDeVida formValues={formValues} response={response.data} />));
+        setResultado(true);
+      } catch (error) {
+        console.error("Error al establecer los estados:", error);
+        // Puedes manejar el error aquí o lanzarlo de nuevo para que sea capturado por el bloque catch externo
+        throw error;
+      }
 
       // Después de la llamada a la API
       setIsSubmitting(false); // Establecer el estado de envío a false
@@ -217,14 +234,24 @@ const Formulario = () => {
     setIsSubmitting(true); // Establecer el estado de envío a true
 
     try {
-      const response = await axios.post(
+      const response2 = await axios.post(
         "https://hoja-de-vida-1--danieleldan.repl.co/api/traducir",
-        {
-          resultado: resultado,
-        }
-      );
-      const sanitizedHTML = DOMPurify.sanitize(response.data.result);
-      setResultado(sanitizedHTML);
+    {
+      resultado: hojadevidaHTML ? hojadevidaHTML : renderToString(<HojaDeVida formValues={formValues} response={response.data} />),
+    }
+  );
+      console.log(response2);
+            try {
+      const sanitizedHTML = DOMPurify.sanitize(response2.data.result);
+      setHojadeVida(sanitizedHTML);
+        setResultado(true);
+                   
+      console.log(sanitizedHTML);
+      } catch (error) {
+        console.error("Error al establecer los estados:", error);
+        // Puedes manejar el error aquí o lanzarlo de nuevo para que sea capturado por el bloque catch externo
+        throw error;
+      }
 
       // Después de la llamada a la API
       setIsSubmitting(false); // Establecer el estado de envío a false
@@ -277,7 +304,7 @@ const Formulario = () => {
   };*/
 
   const modificarFormulario = () => {
-    setResultado("");
+    setResultado(false);
   };
 
   const handleAcepto = () => {
@@ -362,26 +389,31 @@ const Formulario = () => {
         "Para mí, obtener la ciudadanía croata va más allá de un simple documento. Es un medio para honrar a mis antepasados y mantener viva la memoria de mi familia. Aunque nací y crecí fuera de Croacia, siempre he sentido un profundo amor por mi país de origen. La ciudadanía croata sería un símbolo tangible de mi identidad y un recordatorio constante de mis raíces. Además, me brindaría la oportunidad de regresar a Croacia con mayor facilidad, conectarme con mi familia extendida y contribuir al desarrollo de la nación que lleva en mi corazón. Estoy emocionado por la posibilidad de experimentar la vida en Croacia de una manera más profunda y significativa, y estoy comprometido en mantener vivas nuestras tradiciones y valores croatas dentro y fuera del país.",
     });
   };
-
+  
   return (
     <div className="container">
       <Modal />
       <h1>Hoja de Vida</h1>
       {resultado && (
         <div>
-          {estaEditando ? (
-            <CKEditor
-              config={{ initialData: resultado }}
-              initData={resultado}
-              onChange={(evt) => setResultado(evt.editor.getData())}
-            />
-          ) : (
-            <div
-              id="result"
-              className="result"
-              dangerouslySetInnerHTML={{ __html: resultado }}
-            />
-          )}
+{estaEditando ? (
+  <CKEditor
+    initData={hojadevidaHTML}
+    onChange={(evt) => {
+      setHojadeVida(evt.editor.getData());
+    }}
+  />
+) : (
+  loedito ? (
+    <div className="result" id="result">
+    <div dangerouslySetInnerHTML={{ __html: hojadevidaHTML }} />
+      </div>
+  ) : (
+    !loedito && <HojaDeVida formValues={formValues} response={respuesta} />
+  )
+)}
+
+          
           <button onClick={manejarClickEditarGuardar}>
             {estaEditando ? "Guardar" : "Editar"}
           </button>

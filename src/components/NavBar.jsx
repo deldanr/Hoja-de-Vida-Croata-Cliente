@@ -32,9 +32,9 @@ const NavBar = () => {
       <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`} role="menu">
         <li role="none">
           <NavLink 
-            exact={true} 
+            exact="true"
             to="/" 
-            activeClassName="active" 
+            activeclassname="active" 
             onClick={handleLinkClick}
             role="menuitem"
           >
@@ -44,7 +44,7 @@ const NavBar = () => {
         <li role="none">
           <NavLink 
             to="/formulario" 
-            activeClassName="active" 
+            activeclassname="active" 
             onClick={handleLinkClick}
             role="menuitem"
           >
@@ -54,7 +54,7 @@ const NavBar = () => {
         <li role="none">
           <NavLink 
             to="/nosotros" 
-            activeClassName="active" 
+            activeclassname="active" 
             onClick={handleLinkClick}
             role="menuitem"
           >
@@ -64,7 +64,7 @@ const NavBar = () => {
         <li role="none">
           <NavLink 
             to="/contacto" 
-            activeClassName="active" 
+            activeclassname="active" 
             onClick={handleLinkClick}
             role="menuitem"
           >
