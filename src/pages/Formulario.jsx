@@ -886,7 +886,7 @@ const manejarClickEditarGuardar = () => {
           />
           <textarea
             type="text"
-            rows={7}
+            rows={8}
             name="motivoEmigracion"
             maxLength={700}
             value={formValues.antepasadoCroata.motivoEmigracion}

@@ -1,6 +1,6 @@
 body {
-  background-image: url("./background3.jpg");
-  background-size: cover;
+  /*background-image: url("./background3.jpg");
+  background-size: cover;*/
 }
 
 .container {
@@ -13,7 +13,7 @@ body {
 }
 
 a {
-  color: white;
+  color: blue;
 }
 
 h1 {
@@ -141,12 +141,12 @@ th {
 
 .description {
   font-size: 16px;
-  color: white;
+  color: black;
 }
 
 .range-label {
   font-size: 14px;
-  color: white;
+  color: black;
 }
 
 .adjustment {
@@ -155,6 +155,6 @@ th {
 
 .creativity-value {
   font-weight: bold;
-  color: white;
+  color: gray;
 }
 
